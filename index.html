@@ -8,306 +8,694 @@
   <link rel="icon" href="icons/Nitro-Icon.png" />
   <link rel="apple-touch-icon" href="icons/Nitro-Icon.png" />
   <link rel="mask-icon" href="icons/Nitro-Icon.png" color="#000000" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
   <style>
-    /* ── SHARED TOKENS ── */
+    /* ── TOKENS ── */
     :root {
-      --primary-bg:     #0a0a0a;
-      --secondary-bg:   #1a1a1a;
-      --accent-red:     #e63946;
-      --accent-dark-red:#9e2a2b;
-      --text-primary:   #f1faee;
-      --text-secondary: #a8dadc;
-      --accent-blue:    #457b9d;
-      --accent-dark-blue:#1d3557;
+      --void:        #050505;
+      --surface:     #111111;
+      --surface2:    #1a1a1a;
+      --surface3:    #222222;
+      --red:         #e63946;
+      --red-hot:     #ff4d5a;
+      --red-dim:     #9e2a2b;
+      --red-deep:    #2a0608;
+      --data:        #c0ccd4;
+      --data-dim:    #637580;
+      --white:       #f0f4f6;
+      --blue-accent: #1d7fa0;
+      --glow-red:    rgba(230,57,70,0.35);
+      --glow-red-sm: rgba(230,57,70,0.15);
     }
 
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
 
     body {
-      margin: 0; padding: 0;
       font-family: 'Roboto Mono', monospace;
-      background-color: var(--primary-bg);
-      color: var(--text-primary);
+      background: var(--void);
+      color: var(--white);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-image: radial-gradient(circle at 10% 20%, rgba(230,57,70,0.1) 0%, rgba(10,10,10,1) 90%);
       overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(230,57,70,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(230,57,70,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── SCANLINE OVERLAY ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HUD HEADER ── */
+    .hud-header {
+      width: 100%;
+      position: relative;
+      z-index: 10;
+      background: var(--surface);
+      border-bottom: 1px solid var(--red-dim);
+      box-shadow: 0 0 30px var(--glow-red);
+    }
+
+    .hud-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1.2rem;
+      border-bottom: 1px solid rgba(230,57,70,0.2);
+    }
+
+    .hud-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--red);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .hud-badge {
+      font-size: 0.6rem;
+      color: var(--data-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .hud-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.6rem;
+      color: var(--data-dim);
+      letter-spacing: 1px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
     }
 
     /* ── NAV TABS ── */
     .nav-tabs {
       display: flex;
       width: 100%;
-      max-width: 800px;
-      margin: 1rem auto 0;
-      gap: 4px;
-      padding: 0 1rem;
     }
+
     .nav-tab {
       flex: 1;
-      padding: 10px 8px;
-      background: var(--secondary-bg);
-      color: var(--text-secondary);
-      border: 1px solid rgba(230,57,70,0.3);
-      border-bottom: none;
-      border-radius: 6px 6px 0 0;
+      padding: 0.75rem 0.5rem;
+      background: transparent;
+      color: var(--data-dim);
+      border: none;
+      border-right: 1px solid rgba(230,57,70,0.15);
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.5px;
+      font-size: 0.55rem;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       cursor: pointer;
-      transition: 0.2s;
-      text-align: center;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
     }
-    .nav-tab:hover  { background: rgba(230,57,70,0.1); color: var(--text-primary); }
-    .nav-tab.active { background: var(--secondary-bg); color: var(--accent-red); border-color: var(--accent-red); }
 
-    /* ── PAGE PANELS ── */
-    .page { display: none; width: 100%; }
+    .nav-tab:last-child { border-right: none; }
+
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+      transform: scaleX(0);
+      transition: transform 0.25s ease;
+    }
+
+    .nav-tab:hover { color: var(--white); background: rgba(230,57,70,0.08); }
+    .nav-tab.active { color: var(--red); background: rgba(230,57,70,0.12); }
+    .nav-tab.active::after { transform: scaleX(1); }
+
+    .nav-tab .tab-icon {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 3px;
+    }
+
+    /* ── PAGES ── */
+    .page { display: none; width: 100%; position: relative; z-index: 1; }
     .page.active { display: block; }
 
-    /* ── HOME PAGE ── */
-    #page-home .container {
-      text-align: center;
-      width: 90%;
-      max-width: 800px;
-      margin: 0 auto 2rem;
-      padding: 2rem;
-      border: 1px solid var(--accent-red);
-      border-radius: 0 0 8px 8px;
-      box-shadow: 0 0 20px rgba(230,57,70,0.3);
-      background-color: var(--secondary-bg);
+    /* ════════════════════
+       HOME PAGE
+    ════════════════════ */
+    #page-home {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 3rem;
+      min-height: calc(100vh - 90px);
     }
-    #page-home h1 {
+    #page-home.active { display: flex; }
+
+    .home-eyebrow {
       font-family: 'Orbitron', sans-serif;
-      font-weight: 700;
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      color: var(--accent-red);
+      font-size: 0.6rem;
+      color: var(--red);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .home-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .home-title span { color: var(--red); }
+
+    .home-sub {
+      font-size: 0.7rem;
+      color: var(--data-dim);
+      letter-spacing: 2px;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    /* QR Display */
+    .qr-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 260px;
+      height: 260px;
+      margin: 2rem auto;
+    }
+
+    .qr-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1.5px solid var(--red);
+      box-shadow: 0 0 20px var(--glow-red), inset 0 0 20px var(--glow-red-sm);
+      animation: ring-pulse 3s ease-in-out infinite;
+    }
+
+    .qr-ring-inner {
+      position: absolute;
+      inset: -24px;
+      border-radius: 50%;
+      border: 1px solid rgba(230,57,70,0.25);
+      animation: ring-pulse 3s ease-in-out infinite 0.5s;
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.02); }
+    }
+
+    /* Corner brackets */
+    .qr-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--red);
+      border-style: solid;
+    }
+    .qr-corner.tl { top: -4px; left: -4px; border-width: 2px 0 0 2px; }
+    .qr-corner.tr { top: -4px; right: -4px; border-width: 2px 2px 0 0; }
+    .qr-corner.bl { bottom: -4px; left: -4px; border-width: 0 0 2px 2px; }
+    .qr-corner.br { bottom: -4px; right: -4px; border-width: 0 2px 2px 0; }
+
+    .qr-inner {
+      width: 220px;
+      height: 220px;
+      background: var(--surface);
+      border: 1px solid rgba(230,57,70,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #qrcode { width: 100%; height: 100%; }
+    #qrcode svg, #qrcode canvas { width: 100% !important; height: 100% !important; }
+
+    #caldruki img { width: 120px; opacity: 0.4; }
+
+    .qr-label {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.55rem;
+      color: var(--data-dim);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Nav Buttons */
+    .home-nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 480px;
+      margin: 2.5rem auto 0;
+    }
+
+    .home-nav-btn {
+      position: relative;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border: 1px solid rgba(230,57,70,0.3);
+      border-radius: 4px;
+      color: var(--white);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s;
+      overflow: hidden;
+    }
+
+    .home-nav-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--red) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .home-nav-btn:hover { border-color: var(--red); transform: translateY(-2px); box-shadow: 0 8px 24px var(--glow-red); }
+    .home-nav-btn:hover::before { opacity: 0.15; }
+    .home-nav-btn:active { transform: translateY(0); }
+
+    .home-nav-btn .btn-icon {
+      display: block;
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .home-nav-btn .btn-sublabel {
+      display: block;
+      font-size: 0.5rem;
+      color: var(--data-dim);
+      margin-top: 0.3rem;
+      font-family: 'Roboto Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    .qr-fallback {
+      width: 100%;
+      max-width: 480px;
+      margin: 1rem auto 0;
+      background: var(--surface2);
+      border: 1px solid rgba(230,57,70,0.2);
+      border-radius: 4px;
+      padding: 1rem;
+      font-size: 0.7rem;
+      color: var(--data-dim);
+    }
+    .qr-fallback .fallback-title {
+      color: var(--red);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    #qrData { overflow-wrap: anywhere; word-break: break-word; }
+    #qrData div { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+
+    /* ════════════════════
+       FORM PAGES
+    ════════════════════ */
+    .form-page { padding: 0 0 4rem; }
+
+    .form-hero {
+      padding: 1.5rem 1.2rem 1rem;
+      border-bottom: 1px solid rgba(230,57,70,0.2);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .form-hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1rem, 3.5vw, 1.6rem);
+      color: var(--red);
       text-transform: uppercase;
       letter-spacing: 2px;
     }
-    #page-home h3 { color: var(--text-secondary); font-family: 'Orbitron', sans-serif; }
-    #page-home p  { color: var(--text-secondary); }
 
-    .scouting-options {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
-    }
-    .scout-btn, .analysis-btn, .data-analysis-btn {
-      background-color: var(--primary-bg);
-      color: var(--text-primary);
-      border-radius: 6px;
-      padding: 1.5rem 2.5rem;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-      max-width: 300px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-    .scout-btn { border: 2px solid var(--accent-red); }
-    .scout-btn:hover { background-color: var(--accent-red); color: var(--text-primary); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(230,57,70,0.4); }
-    .scout-btn:active { transform: translateY(1px); background-color: var(--accent-dark-red); }
-    .analysis-btn { border: 2px solid var(--accent-blue); }
-    .analysis-btn:hover { background-color: var(--accent-blue); color: var(--text-primary); transform: translateY(-3px); }
-    .analysis-btn:active { transform: translateY(1px); background-color: var(--accent-dark-blue); }
-
-    .rapper {
-      max-width: 100%;
-      display: block;
-      background: rgba(10,10,10,0.5);
-      margin-top: 25px;
-      padding: 0.5rem 0.8rem;
-      border-radius: 5px;
-      border: 1px solid rgba(230,57,70,0.3);
-      margin-bottom: 10px;
-    }
-    #qrData { overflow-wrap: anywhere; word-break: break-word; }
-
-    #qrcode { margin: 1rem auto; }
-    #caldruki { margin: 1rem auto; }
-
-    /* ── SHARED FORM STYLES (match + pit) ── */
-    .form-page .container {
-      width: 90%;
-      max-width: 800px;
-      padding: 1rem 1.2rem;
-      border: 1px solid var(--accent-red);
-      border-radius: 0 0 6px 6px;
-      box-shadow: 0 0 12px rgba(230,57,70,0.25);
-      background: var(--secondary-bg);
-      margin: 0 auto 1.2rem;
-    }
-    .form-page h1, .form-page h2, .form-page h3 {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--accent-red);
-      margin: 0.6rem 0;
-    }
-    .form-page h1 { font-size: 2rem; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
-    .form-page h2 { font-size: 1.4rem; border-bottom: 2px solid var(--accent-red); padding-bottom: 0.3rem; }
-    .form-page h3 { font-size: 1.1rem; color: var(--text-secondary); }
-
-    .form-page .section {
-      margin-bottom: 2rem;
-      background: rgba(26,26,26,0.7);
-      padding: 1rem;
-      border-radius: 5px;
-      border-left: 3px solid var(--accent-red);
+    .form-hero .hero-meta {
+      font-size: 0.6rem;
+      color: var(--data-dim);
+      letter-spacing: 2px;
+      margin-top: 0.2rem;
     }
 
-    .form-page .option-group {
-      margin-bottom: 1rem;
-      background: rgba(10,10,10,0.5);
-      padding: 0.7rem;
-      border-radius: 5px;
-      border: 1px solid rgba(230,57,70,0.3);
-    }
-    .form-page .option-group > label,
-    .form-page .form-group > label {
-      display: block;
-      margin-bottom: 0.4rem;
-      font-weight: 500;
+    .form-body {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 1.2rem 1rem;
     }
 
-    .form-page .radio-options { display: flex; flex-direction: column; gap: 0.3rem; }
-    .form-page .radio-options label { display: block; cursor: pointer; }
-    .form-page .radio-options label:hover { background: rgba(69,123,157,0.25); }
-    .form-page .radio-options input[type="radio"] { margin-right: 0.3rem; }
-
-    .form-page input[type="text"],
-    .form-page input[type="number"],
-    .form-page select {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 0.7rem;
-      background: var(--primary-bg);
-      border: 1px solid var(--accent-red);
+    /* SECTION MODULE */
+    .module {
+      margin-bottom: 1.2rem;
+      background: var(--surface);
+      border: 1px solid rgba(230,57,70,0.18);
       border-radius: 4px;
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      font-family: 'Roboto Mono', monospace;
+      overflow: hidden;
     }
-    .form-page select { appearance: none; }
-    .form-page input[type="checkbox"] { margin-right: 0.4rem; transform: scale(1.1); }
 
-    .form-page .counter {
+    .module-header {
       display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
       align-items: center;
-      justify-content: flex-start;
-      gap: 5px;
-      background: rgba(10,10,10,0.5);
-      padding: 0.5rem 0.8rem;
-      border-radius: 5px;
-      border: 1px solid rgba(230,57,70,0.3);
-      margin-bottom: 10px;
+      gap: 0.8rem;
+      padding: 0.8rem 1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid rgba(230,57,70,0.18);
     }
-    .form-page .counter label { font-weight: 500; width: auto; margin-right: 10px; flex-shrink: 0; }
-    .form-page .counter input {
-      width: 50px;
-      flex-shrink: 0;
-      text-align: center;
-      padding: 0.3rem 0;
-      background: var(--primary-bg);
-      border: 1px solid var(--accent-red);
-      border-radius: 4px;
-      color: var(--text-primary);
+
+    .module-number {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.55rem;
+      color: var(--red);
+      letter-spacing: 1px;
+      opacity: 0.7;
+    }
+
+    .module-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .module-body { padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+
+    /* FIELD ROWS */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .field-label {
+      font-size: 0.65rem;
+      color: var(--data-dim);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    /* INPUTS */
+    .form-input {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      background: var(--void);
+      border: 1px solid rgba(230,57,70,0.3);
+      border-radius: 3px;
+      color: var(--white);
       font-size: 0.9rem;
-      margin: 0 !important;
+      font-family: 'Roboto Mono', monospace;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
     }
+    .form-input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 2px var(--glow-red-sm); }
+    .form-input::placeholder { color: var(--data-dim); opacity: 0.5; }
 
-    .form-page .extra-notes, .form-page .name {
-      display: block;
-      background: rgba(10,10,10,0.5);
-      padding: 0.5rem 0.8rem;
-      border-radius: 5px;
-      border: 1px solid rgba(230,57,70,0.3);
-      margin-bottom: 10px;
-    }
-
-    .form-page .checkbox-row { display: block; }
-
-    /* ── BUTTONS (global) ── */
-    button {
-      padding: 8px 16px;
-      background: #e63946;
-      color: #000;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
+    select.form-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e63946' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      padding-right: 2rem;
       cursor: pointer;
-      transition: 0.2s;
+    }
+
+    /* COUNTER */
+    .counter-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--void);
+      border: 1px solid rgba(230,57,70,0.3);
+      border-radius: 3px;
+      padding: 0.5rem 0.8rem;
+    }
+
+    .counter-label {
+      flex: 1;
+      font-size: 0.75rem;
+      color: var(--data);
+    }
+
+    .counter-val {
+      width: 48px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: var(--white);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .counter-val:focus { outline: none; }
+
+    .counter-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 3px;
+      background: var(--surface2);
+      border: 1px solid rgba(230,57,70,0.3);
+      color: var(--red);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
       font-family: 'Roboto Mono', monospace;
     }
-    button:hover   { background: #9e2a2b; transform: translateY(-1px); }
-    button:active  { transform: translateY(0); background: #5c0202; }
+    .counter-btn:hover { background: var(--red); color: #000; border-color: var(--red); transform: none; }
+    .counter-btn:active { background: var(--red-dim); transform: none; }
 
-    .form-page .counter button {
-      flex-shrink: 0;
-      width: 30px; height: 30px;
-      font-size: 16px;
-      display: flex; align-items: center; justify-content: center;
+    /* RADIO GROUP */
+    .radio-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
-    /* ── PIT-SPECIFIC ── */
-    #page-pit .form-group input { font-weight: 500; min-width: 120px; max-width: 730px; }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 0.8rem;
+      background: var(--void);
+      border: 1px solid transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 0.8rem;
+      color: var(--data);
+    }
+    .radio-option:hover { border-color: rgba(230,57,70,0.3); color: var(--white); }
+    .radio-option input[type="radio"] { accent-color: var(--red); width: 14px; height: 14px; flex-shrink: 0; }
 
-    @media (max-width: 600px) {
-      .nav-tab { font-size: 0.55rem; padding: 8px 4px; }
-      .form-page .container { padding: 1rem; }
-      .form-page h1 { font-size: 1.6rem; }
-      .form-page h2 { font-size: 1.3rem; }
-      .form-page .counter { flex-direction: column; align-items: flex-start; }
-      .form-page .counter label { margin-bottom: 0.3rem; }
-      #page-home h1 { font-size: 2rem; }
-      .scouting-options { flex-direction: column; gap: 1rem; align-items: center; }
-      .scout-btn, .analysis-btn { padding: 1rem 1.5rem; font-size: 1rem; }
+    /* CHECKBOX GROUP */
+    .checkbox-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 0.8rem;
+      background: var(--void);
+      border: 1px solid transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 0.8rem;
+      color: var(--data);
+    }
+    .checkbox-option:hover { border-color: rgba(230,57,70,0.3); color: var(--white); }
+    .checkbox-option input[type="checkbox"] { accent-color: var(--red); width: 14px; height: 14px; flex-shrink: 0; }
+
+    .radio-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .radio-row .radio-option {
+      flex: 1;
+      min-width: 100px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* SUBMIT BUTTON */
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--red);
+      color: var(--void);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.4rem;
+      box-shadow: 0 4px 20px var(--glow-red);
+    }
+    .submit-btn:hover { background: var(--red-hot); transform: translateY(-1px); box-shadow: 0 8px 30px var(--glow-red); }
+    .submit-btn:active { transform: translateY(0); background: var(--red-dim); }
+
+    /* HINT TEXT */
+    .field-hint {
+      font-size: 0.6rem;
+      color: var(--data-dim);
+      letter-spacing: 0.5px;
+      font-style: italic;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .home-nav-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+      .radio-row .radio-option { min-width: 80px; font-size: 0.72rem; }
+      .form-hero h1 { font-size: 1rem; }
+      .module-title { font-size: 0.75rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── NAVIGATION TABS ── -->
-  <nav class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('home')">Home</button>
-    <button class="nav-tab"        onclick="showPage('match')">Match Scouting</button>
-    <button class="nav-tab"        onclick="showPage('pit')">Pit Scouting</button>
-  </nav>
+  <!-- ── HUD HEADER ── -->
+  <header class="hud-header">
+    <div class="hud-title-bar">
+      <div class="hud-logo">C.L.U.T.C.H</div>
+      <div class="hud-badge">Debug V5</div>
+      <div class="hud-status">
+        <span class="status-dot"></span>
+        <span>ONLINE</span>
+      </div>
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('home')">
+        <span class="tab-icon">⌂</span>Home
+      </button>
+      <button class="nav-tab" onclick="showPage('match')">
+        <span class="tab-icon">◈</span>Match Scout
+      </button>
+      <button class="nav-tab" onclick="showPage('pit')">
+        <span class="tab-icon">◉</span>Pit Scout
+      </button>
+    </nav>
+  </header>
 
   <!-- ════════════════════════════════
        HOME PAGE
   ════════════════════════════════ -->
   <div id="page-home" class="page active">
-    <div class="container">
-      <h1>PROJECT CLUTCH PWA</h1>
-      <h3>Debug V5</h3>
-      <p>Hold your finger on the QR code<br>tap "Save to Photo Library."</p>
+    <div class="home-eyebrow">FRC Scouting System</div>
+    <h1 class="home-title">Project<br><span>C.L.U.T.C.H</span></h1>
+    <p class="home-sub">Tap hold QR → Save to Photos</p>
 
-      <div id="qrcode"></div>
-      <div id="caldruki">
-        <img src="icons/Nitro-Icon.png" width="200" />
+    <!-- QR Centered Stage -->
+    <div class="qr-stage">
+      <div class="qr-ring"></div>
+      <div class="qr-ring-inner"></div>
+      <div class="qr-corner tl"></div>
+      <div class="qr-corner tr"></div>
+      <div class="qr-corner bl"></div>
+      <div class="qr-corner br"></div>
+      <div class="qr-inner">
+        <div id="qrcode"></div>
+        <div id="caldruki">
+          <img src="icons/Nitro-Icon.png" />
+        </div>
       </div>
+      <div class="qr-label">Scan to Process Data</div>
+    </div>
 
-      <div class="scouting-options">
-        <button class="scout-btn" onclick="showPage('match')">Match Scouting</button>
-        <button class="scout-btn" onclick="showPage('pit')">Pit Scouting</button>
-      </div>
+    <div class="home-nav-grid">
+      <button class="home-nav-btn" onclick="showPage('match')">
+        <span class="btn-icon">◈</span>
+        Match<br>Scouting
+        <span class="btn-sublabel">In-match tracking</span>
+      </button>
+      <button class="home-nav-btn" onclick="showPage('pit')">
+        <span class="btn-icon">◉</span>
+        Pit<br>Scouting
+        <span class="btn-sublabel">Team capabilities</span>
+      </button>
+    </div>
 
-      <div class="rapper" id="noshow" style="display:none;">
-        <p>User data (if QR fails to load): <span id="qrData"></span></p>
-      </div>
+    <div class="qr-fallback" id="noshow" style="display:none;">
+      <div class="fallback-title">// Raw Data Output</div>
+      <div id="qrData"></div>
     </div>
   </div>
 
@@ -315,335 +703,443 @@
        MATCH SCOUTING PAGE
   ════════════════════════════════ -->
   <div id="page-match" class="page form-page">
-    <div class="container">
-      <h1>Match Scouting Submission</h1>
-      <form id="matchData">
-
-        <!-- PREGAME -->
-        <div class="section">
-          <h2>Pregame</h2>
-          <div class="counter">
-            <label>Match Type:</label>
-            <div class="radio-options" style="flex-direction:row;gap:0.8rem;flex-wrap:wrap;">
-              <label><input type="radio" name="match_type" value="practice" required>Practice</label>
-              <label><input type="radio" name="match_type" value="qual" required>Qualification</label>
-              <label><input type="radio" name="match_type" value="final" required>Final</label>
-            </div>
-          </div>
-          <div class="counter">
-            <label for="match_number">Match Number:</label>
-            <input type="number" id="match_number" name="match_number" value="0" min="0" required>
-          </div>
-          <div class="counter">
-            <label for="team_number">Team Number:</label>
-            <input type="number" id="team_number" name="team_number" value="0" min="0" required>
-          </div>
-          <div class="name">
-            <label for="scouter_initials">Scouter Initials:</label>
-            <input type="text" id="scouter_initials" name="scouter_initials" required>
-          </div>
-        </div>
-
-        <!-- AUTO -->
-        <div class="section">
-          <h2>Auto</h2>
-          <h3>Auto Scoring</h3>
-          <div class="counter">
-            <label for="fuel_made_auto">Fuel made:</label>
-            <button type="button" onclick="decrement('fuel_made_auto')">-</button>
-            <input type="number" id="fuel_made_auto" name="fuel_made_auto" value="0" required>
-            <button type="button" onclick="increment('fuel_made_auto')">+</button>
-          </div>
-          <div class="counter">
-            <label for="fuel_missed_auto">Fuel missed:</label>
-            <button type="button" onclick="decrement('fuel_missed_auto')">-</button>
-            <input type="number" id="fuel_missed_auto" name="fuel_missed_auto" value="0" required>
-            <button type="button" onclick="increment('fuel_missed_auto')">+</button>
-          </div>
-
-          <h3>Auto Climbing</h3>
-          <div class="option-group">
-            <div class="radio-options">
-              <label>Does the robot climb?</label>
-              <label><input type="radio" name="auto_climb" value="yesauto_climb">Yes (L1)</label>
-              <label><input type="radio" name="auto_climb" value="noauto_climb">No</label>
-            </div>
-          </div>
-
-          <h3>Auto Intake</h3>
-          <div class="option-group">
-            <label>Where does the robot intake fuel?</label>
-            <div class="checkbox-row">
-              <label><input type="checkbox" name="no_intake" value="no_intake">Did not intake</label>
-              <label><input type="checkbox" name="depot" value="fuel">Depot</label>
-              <label><input type="checkbox" name="neutral_zone" value="neutral_zone">Neutral zone</label>
-              <label><input type="checkbox" name="human_station" value="human_station">Human station</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- TELEOP -->
-        <div class="section">
-          <h2>Teleop</h2>
-          <h3>Teleop Scoring</h3>
-          <div class="counter">
-            <label for="fuel_made">Fuel made:</label>
-            <button type="button" onclick="decrement('fuel_made')">-</button>
-            <input type="number" id="fuel_made" name="fuel_made" value="0" min="0" required>
-            <button type="button" onclick="increment('fuel_made')">+</button>
-          </div>
-          <div class="counter">
-            <label for="fuel_missed">Fuel missed:</label>
-            <button type="button" onclick="decrement('fuel_missed')">-</button>
-            <input type="number" id="fuel_missed" name="fuel_missed" value="0" min="0" required>
-            <button type="button" onclick="increment('fuel_missed')">+</button>
-          </div>
-
-          <h3>Active Strategy</h3>
-          <div class="option-group">
-            <label>Active Strategy:</label>
-            <div class="radio-options">
-              <label><input type="radio" name="active_strat" value="none" required> No Strategy</label>
-              <label><input type="radio" name="active_strat" value="shoot" required> Shoots</label>
-              <label><input type="radio" name="active_strat" value="inbound" required> Inbounds</label>
-              <label><input type="radio" name="active_strat" value="defend" required> Defends</label>
-            </div>
-          </div>
-
-          <h3>Inactive Strategy</h3>
-          <div class="option-group">
-            <label>Inactive Strategy:</label>
-            <div class="radio-options">
-              <label><input type="radio" name="inactive_strat" value="none" required> No Strategy</label>
-              <label><input type="radio" name="inactive_strat" value="shoot" required> Shoots</label>
-              <label><input type="radio" name="inactive_strat" value="inbound" required> Inbounds</label>
-              <label><input type="radio" name="inactive_strat" value="defend" required> Defends</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- DEFENCE -->
-        <div class="section">
-          <h2>Defence</h2>
-          <div class="option-group">
-            <label>Method of Defending:</label>
-            <div class="radio-options">
-              <label><input type="radio" name="defense_method" value="none" required> None</label>
-              <label><input type="radio" name="defense_method" value="blocking" required> Blocking trench/bump</label>
-              <label><input type="radio" name="defense_method" value="disrupting" required> Disrupting source</label>
-              <label><input type="radio" name="defense_method" value="dealigns" required> Dealigns Shooters</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- ENDGAME -->
-        <div class="section">
-          <h2>Endgame</h2>
-          <div class="option-group">
-            <label>Endgame Type:</label>
-            <div class="radio-options">
-              <label><input type="radio" name="endgame_type" value="none" required> No Endgame</label>
-              <label><input type="radio" name="endgame_type" value="l1_climb" required> L1 Climb</label>
-              <label><input type="radio" name="endgame_type" value="l2_climb" required> L2 Climb</label>
-              <label><input type="radio" name="endgame_type" value="l3_climb" required> L3 Climb</label>
-              <label><input type="radio" name="endgame_type" value="failed_climb" required> Failed Climb</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- MISC -->
-        <div class="section">
-          <h2>Misc</h2>
-          <div class="option-group">
-            <label>Is the robot disabled?</label>
-            <div class="radio-options">
-              <label><input type="radio" name="is_disabled" value="no" required> No</label>
-              <label><input type="radio" name="is_disabled" value="yes" required> Yes</label>
-            </div>
-          </div>
-          <div class="option-group">
-            <label>Is the robot tipped?</label>
-            <div class="radio-options">
-              <label><input type="radio" name="tipped" value="no" required> No</label>
-              <label><input type="radio" name="tipped" value="yes" required> Yes</label>
-            </div>
-          </div>
-          <div class="counter">
-            <label for="penalty_amount">Penalty Amount:</label>
-            <button type="button" onclick="decrement('penalty_amount')">-</button>
-            <input type="number" id="penalty_amount" name="penalty_amount" value="0" min="0" required>
-            <button type="button" onclick="increment('penalty_amount')">+</button>
-          </div>
-          <div class="extra-notes">
-            <label>Any USEFUL extra notes?</label>
-            <input type="text" id="extra_notes" name="extra_notes" placeholder="eg. Fast cycle times but frequently gets stuck on fuel.">
-          </div>
-          <button type="submit">Submit Data</button>
-        </div>
-
-      </form>
+    <div class="form-hero">
+      <h1>Match Scouting</h1>
+      <div class="hero-meta">// Data Capture · In-Match Performance</div>
     </div>
+    <form id="matchData" class="form-body">
+
+      <!-- PREGAME -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">01</span>
+          <span class="module-title">Pregame</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Match Type</div>
+            <div class="radio-row">
+              <label class="radio-option">
+                <input type="radio" name="match_type" value="practice" required>Practice
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="match_type" value="qual" required>Qualification
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="match_type" value="final" required>Final
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Match Number</div>
+            <div class="counter-row">
+              <span class="counter-label">Match #</span>
+              <button type="button" class="counter-btn" onclick="decrement('match_number')">−</button>
+              <input type="number" id="match_number" name="match_number" class="counter-val" value="0" min="0" required>
+              <button type="button" class="counter-btn" onclick="increment('match_number')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Team Number</div>
+            <div class="counter-row">
+              <span class="counter-label">Team #</span>
+              <button type="button" class="counter-btn" onclick="decrement('team_number')">−</button>
+              <input type="number" id="team_number" name="team_number" class="counter-val" value="0" min="0" required>
+              <button type="button" class="counter-btn" onclick="increment('team_number')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Scouter Initials</div>
+            <input type="text" id="scouter_initials" name="scouter_initials" class="form-input" placeholder="e.g. JDM" required>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- AUTO -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">02</span>
+          <span class="module-title">Autonomous</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Fuel Made</div>
+            <div class="counter-row">
+              <span class="counter-label">Auto fuel made</span>
+              <button type="button" class="counter-btn" onclick="decrement('fuel_made_auto')">−</button>
+              <input type="number" id="fuel_made_auto" name="fuel_made_auto" class="counter-val" value="0" required>
+              <button type="button" class="counter-btn" onclick="increment('fuel_made_auto')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fuel Missed</div>
+            <div class="counter-row">
+              <span class="counter-label">Auto fuel missed</span>
+              <button type="button" class="counter-btn" onclick="decrement('fuel_missed_auto')">−</button>
+              <input type="number" id="fuel_missed_auto" name="fuel_missed_auto" class="counter-val" value="0" required>
+              <button type="button" class="counter-btn" onclick="increment('fuel_missed_auto')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Auto Climb</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="auto_climb" value="yesauto_climb">Yes (L1)</label>
+              <label class="radio-option"><input type="radio" name="auto_climb" value="noauto_climb">No</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Auto Intake Location</div>
+            <div class="checkbox-grid">
+              <label class="checkbox-option"><input type="checkbox" name="no_intake" value="no_intake">Did not intake</label>
+              <label class="checkbox-option"><input type="checkbox" name="depot" value="fuel">Depot</label>
+              <label class="checkbox-option"><input type="checkbox" name="neutral_zone" value="neutral_zone">Neutral zone</label>
+              <label class="checkbox-option"><input type="checkbox" name="human_station" value="human_station">Human station</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TELEOP -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">03</span>
+          <span class="module-title">Teleop</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Fuel Made</div>
+            <div class="counter-row">
+              <span class="counter-label">Teleop fuel made</span>
+              <button type="button" class="counter-btn" onclick="decrement('fuel_made')">−</button>
+              <input type="number" id="fuel_made" name="fuel_made" class="counter-val" value="0" min="0" required>
+              <button type="button" class="counter-btn" onclick="increment('fuel_made')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fuel Missed</div>
+            <div class="counter-row">
+              <span class="counter-label">Teleop fuel missed</span>
+              <button type="button" class="counter-btn" onclick="decrement('fuel_missed')">−</button>
+              <input type="number" id="fuel_missed" name="fuel_missed" class="counter-val" value="0" min="0" required>
+              <button type="button" class="counter-btn" onclick="increment('fuel_missed')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Active Strategy</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="active_strat" value="none" required>No Strategy</label>
+              <label class="radio-option"><input type="radio" name="active_strat" value="shoot" required>Shoots</label>
+              <label class="radio-option"><input type="radio" name="active_strat" value="inbound" required>Inbounds</label>
+              <label class="radio-option"><input type="radio" name="active_strat" value="defend" required>Defends</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Inactive Strategy</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="inactive_strat" value="none" required>No Strategy</label>
+              <label class="radio-option"><input type="radio" name="inactive_strat" value="shoot" required>Shoots</label>
+              <label class="radio-option"><input type="radio" name="inactive_strat" value="inbound" required>Inbounds</label>
+              <label class="radio-option"><input type="radio" name="inactive_strat" value="defend" required>Defends</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DEFENCE -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">04</span>
+          <span class="module-title">Defence</span>
+        </div>
+        <div class="module-body">
+          <div class="field">
+            <div class="field-label">Method of Defending</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="defense_method" value="none" required>None</label>
+              <label class="radio-option"><input type="radio" name="defense_method" value="blocking" required>Blocking trench/bump</label>
+              <label class="radio-option"><input type="radio" name="defense_method" value="disrupting" required>Disrupting source</label>
+              <label class="radio-option"><input type="radio" name="defense_method" value="dealigns" required>Dealigns shooters</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENDGAME -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">05</span>
+          <span class="module-title">Endgame</span>
+        </div>
+        <div class="module-body">
+          <div class="field">
+            <div class="field-label">Endgame Type</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="endgame_type" value="none" required>No Endgame</label>
+              <label class="radio-option"><input type="radio" name="endgame_type" value="l1_climb" required>L1 Climb</label>
+              <label class="radio-option"><input type="radio" name="endgame_type" value="l2_climb" required>L2 Climb</label>
+              <label class="radio-option"><input type="radio" name="endgame_type" value="l3_climb" required>L3 Climb</label>
+              <label class="radio-option"><input type="radio" name="endgame_type" value="failed_climb" required>Failed Climb</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MISC -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">06</span>
+          <span class="module-title">Miscellaneous</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Robot Disabled?</div>
+            <div class="radio-row">
+              <label class="radio-option"><input type="radio" name="is_disabled" value="no" required>No</label>
+              <label class="radio-option"><input type="radio" name="is_disabled" value="yes" required>Yes</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Robot Tipped?</div>
+            <div class="radio-row">
+              <label class="radio-option"><input type="radio" name="tipped" value="no" required>No</label>
+              <label class="radio-option"><input type="radio" name="tipped" value="yes" required>Yes</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Penalty Amount</div>
+            <div class="counter-row">
+              <span class="counter-label">Penalties</span>
+              <button type="button" class="counter-btn" onclick="decrement('penalty_amount')">−</button>
+              <input type="number" id="penalty_amount" name="penalty_amount" class="counter-val" value="0" min="0" required>
+              <button type="button" class="counter-btn" onclick="increment('penalty_amount')">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Extra Notes</div>
+            <input type="text" id="extra_notes" name="extra_notes" class="form-input" placeholder="e.g. Fast cycles but gets stuck on fuel">
+            <span class="field-hint">Only useful observations</span>
+          </div>
+
+          <button type="submit" class="submit-btn">▶ Submit Match Data</button>
+        </div>
+      </div>
+
+    </form>
   </div>
 
   <!-- ════════════════════════════════
        PIT SCOUTING PAGE
   ════════════════════════════════ -->
-  <div id="page-pit" class="page form-page" id="page-pit">
-    <div class="container">
-      <h1>Pit Scouting Submission</h1>
-      <form id="pitData">
-
-        <!-- PREREQUISITES -->
-        <div class="section">
-          <h2>Prerequisites</h2>
-          <div class="option-group">
-            <div class="form-group">
-              <label for="pit_scouter_initials">Scouter Initials:</label>
-              <input type="text" id="pit_scouter_initials" name="scouter_initials" required>
-            </div>
-            <div class="form-group">
-              <label for="pit_team_number">Team Number:</label>
-              <input type="number" id="pit_team_number" name="team_number" min="1" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- GENERAL CAPABILITIES -->
-        <div class="section">
-          <h2>General Capabilities</h2>
-          <div class="option-group">
-            <div class="form-group">
-              <label for="drivebase">What drivebase does your robot have?</label>
-              <select id="drivebase" name="drivebase" required>
-                <option value="" disabled selected></option>
-                <option value="Swerve">Swerve Drive</option>
-                <option value="Tank">Tank Drive</option>
-                <option value="Other_drivebase">Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="option-group">
-            <div class="form-group">
-              <label for="fuel_capabilities">Can your robot score fuel?</label>
-              <select id="fuel_capabilities" name="fuel_capabilities" required>
-                <option value="" disabled selected></option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-          </div>
-          <div class="option-group">
-            <label>How much fuel can your robot store?</label>
-            <div class="radio-options">
-              <label><input type="radio" name="fuel_cap" value="0" required>0</label>
-              <label><input type="radio" name="fuel_cap" value="1-10" required>1-10</label>
-              <label><input type="radio" name="fuel_cap" value="11-20" required>11-20</label>
-              <label><input type="radio" name="fuel_cap" value="21-30" required>21-30</label>
-              <label><input type="radio" name="fuel_cap" value="31-40" required>31-40</label>
-              <label><input type="radio" name="fuel_cap" value="40+" required>40+</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- AUTO CAPABILITIES -->
-        <div class="section">
-          <h2>Auto Capabilities</h2>
-          <div class="option-group">
-            <div class="form-group">
-              <label for="pit_auto">Does your robot have an auto?</label>
-              <select id="pit_auto" name="auto" required>
-                <option value="" disabled selected></option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-          </div>
-          <div class="option-group">
-            <label>If so, what does your robot do in auto?</label>
-            <div class="checkbox-row">
-              <label><input type="checkbox" name="auto_fuel" value="auto_fuel">Shoot fuel</label>
-              <label><input type="checkbox" name="auto_collectfuel" value="auto_collectfuel">Intake fuel</label>
-              <label><input type="checkbox" name="auto_inbound" value="auto_inbound">Inbound fuel</label>
-              <label><input type="checkbox" name="auto_climb" value="auto_climb">Climb</label>
-              <label style="color:var(--text-secondary);font-size:0.85rem;">Any specifics can be mentioned in extra comments below.</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- ENDGAME CAPABILITIES -->
-        <div class="section">
-          <h2>Endgame Capabilities</h2>
-          <div class="option-group">
-            <label>What levels can their robot climb?</label>
-            <div class="checkbox-row">
-              <label><input type="checkbox" name="climb_capabilities" value="cannot_climb">Cannot Climb</label>
-              <label><input type="checkbox" name="climb_capabilitiesL1" value="l1">L1</label>
-              <label><input type="checkbox" name="climb_capabilitiesL2" value="l2">L2</label>
-              <label><input type="checkbox" name="climb_capabilitiesL3" value="l3">L3</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- GENERAL STRATEGY -->
-        <div class="section">
-          <h2>General Strategy</h2>
-          <div class="option-group">
-            <div class="form-group">
-              <label for="defense">Is their robot focused on defense?</label>
-              <select id="defense" name="defense" required>
-                <option value="" disabled selected></option>
-                <option value="Yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-          </div>
-          <div class="option-group">
-            <label>What do they aim to do during active alliance shifts?</label>
-            <div class="radio-options">
-              <label><input type="radio" name="pit_active_strat" value="none" required> Unknown</label>
-              <label><input type="radio" name="pit_active_strat" value="shoot" required> Shoots</label>
-              <label><input type="radio" name="pit_active_strat" value="inbound" required> Inbounds</label>
-              <label><input type="radio" name="pit_active_strat" value="defend" required> Defends</label>
-            </div>
-          </div>
-          <div class="option-group">
-            <label>What do they aim to do during deactive alliance shifts?</label>
-            <div class="radio-options">
-              <label><input type="radio" name="pit_inactive_strat" value="none" required> Unknown</label>
-              <label><input type="radio" name="pit_inactive_strat" value="shoot" required> Shoots</label>
-              <label><input type="radio" name="pit_inactive_strat" value="inbound" required> Inbounds</label>
-              <label><input type="radio" name="pit_inactive_strat" value="defend" required> Defends</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- MISCELLANEOUS -->
-        <div class="section">
-          <h2>Miscellaneous</h2>
-          <div class="option-group">
-            <label>Does your robot go over the bumps or through the trenches?</label>
-            <div class="checkbox-row">
-              <label><input type="checkbox" name="bump" value="bump">Bump</label>
-              <label><input type="checkbox" name="trench" value="trench">Trench</label>
-            </div>
-          </div>
-          <div class="extra-notes">
-            <label>Any USEFUL extra notes?</label>
-            <input type="text" id="pit_extra_notes" name="extra_notes" placeholder="eg. Their auto routine shoots all the fuel from the outpost into the hub in 5-10 seconds.">
-          </div>
-          <button type="submit">Submit Pit Data</button>
-        </div>
-
-      </form>
+  <div id="page-pit" class="page form-page">
+    <div class="form-hero">
+      <h1>Pit Scouting</h1>
+      <div class="hero-meta">// Data Capture · Team Capabilities</div>
     </div>
+    <form id="pitData" class="form-body">
+
+      <!-- PREREQUISITES -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">01</span>
+          <span class="module-title">Prerequisites</span>
+        </div>
+        <div class="module-body">
+          <div class="field">
+            <div class="field-label">Scouter Initials</div>
+            <input type="text" id="pit_scouter_initials" name="scouter_initials" class="form-input" placeholder="e.g. JDM" required>
+          </div>
+          <div class="field">
+            <div class="field-label">Team Number</div>
+            <input type="number" id="pit_team_number" name="team_number" class="form-input" placeholder="e.g. 3788" min="1" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERAL CAPABILITIES -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">02</span>
+          <span class="module-title">General Capabilities</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Drivebase Type</div>
+            <select name="drivebase" class="form-input" required>
+              <option value="" disabled selected>Select drivebase…</option>
+              <option value="Swerve">Swerve Drive</option>
+              <option value="Tank">Tank Drive</option>
+              <option value="Other_drivebase">Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Can Robot Score Fuel?</div>
+            <select name="fuel_capabilities" class="form-input" required>
+              <option value="" disabled selected>Select…</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Fuel Storage Capacity</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="fuel_cap" value="0" required>0</label>
+              <label class="radio-option"><input type="radio" name="fuel_cap" value="1-10" required>1–10</label>
+              <label class="radio-option"><input type="radio" name="fuel_cap" value="11-20" required>11–20</label>
+              <label class="radio-option"><input type="radio" name="fuel_cap" value="21-30" required>21–30</label>
+              <label class="radio-option"><input type="radio" name="fuel_cap" value="31-40" required>31–40</label>
+              <label class="radio-option"><input type="radio" name="fuel_cap" value="40+" required>40+</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- AUTO -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">03</span>
+          <span class="module-title">Auto Capabilities</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Has Auto Routine?</div>
+            <select name="auto" class="form-input" required>
+              <option value="" disabled selected>Select…</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Auto Actions</div>
+            <div class="checkbox-grid">
+              <label class="checkbox-option"><input type="checkbox" name="auto_fuel" value="auto_fuel">Shoot fuel</label>
+              <label class="checkbox-option"><input type="checkbox" name="auto_collectfuel" value="auto_collectfuel">Intake fuel</label>
+              <label class="checkbox-option"><input type="checkbox" name="auto_inbound" value="auto_inbound">Inbound fuel</label>
+              <label class="checkbox-option"><input type="checkbox" name="auto_climb" value="auto_climb">Climb</label>
+            </div>
+            <span class="field-hint">Specifics can be added in extra notes below</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ENDGAME -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">04</span>
+          <span class="module-title">Endgame Capabilities</span>
+        </div>
+        <div class="module-body">
+          <div class="field">
+            <div class="field-label">Climb Levels</div>
+            <div class="checkbox-grid">
+              <label class="checkbox-option"><input type="checkbox" name="climb_capabilities" value="cannot_climb">Cannot Climb</label>
+              <label class="checkbox-option"><input type="checkbox" name="climb_capabilitiesL1" value="l1">L1</label>
+              <label class="checkbox-option"><input type="checkbox" name="climb_capabilitiesL2" value="l2">L2</label>
+              <label class="checkbox-option"><input type="checkbox" name="climb_capabilitiesL3" value="l3">L3</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STRATEGY -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">05</span>
+          <span class="module-title">General Strategy</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Defense Focused?</div>
+            <select name="defense" class="form-input" required>
+              <option value="" disabled selected>Select…</option>
+              <option value="Yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Active Alliance Shift</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="pit_active_strat" value="none" required>Unknown</label>
+              <label class="radio-option"><input type="radio" name="pit_active_strat" value="shoot" required>Shoots</label>
+              <label class="radio-option"><input type="radio" name="pit_active_strat" value="inbound" required>Inbounds</label>
+              <label class="radio-option"><input type="radio" name="pit_active_strat" value="defend" required>Defends</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Inactive Alliance Shift</div>
+            <div class="radio-grid">
+              <label class="radio-option"><input type="radio" name="pit_inactive_strat" value="none" required>Unknown</label>
+              <label class="radio-option"><input type="radio" name="pit_inactive_strat" value="shoot" required>Shoots</label>
+              <label class="radio-option"><input type="radio" name="pit_inactive_strat" value="inbound" required>Inbounds</label>
+              <label class="radio-option"><input type="radio" name="pit_inactive_strat" value="defend" required>Defends</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MISC -->
+      <div class="module">
+        <div class="module-header">
+          <span class="module-number">06</span>
+          <span class="module-title">Miscellaneous</span>
+        </div>
+        <div class="module-body">
+
+          <div class="field">
+            <div class="field-label">Field Navigation</div>
+            <div class="checkbox-grid">
+              <label class="checkbox-option"><input type="checkbox" name="bump" value="bump">Goes over bumps</label>
+              <label class="checkbox-option"><input type="checkbox" name="trench" value="trench">Goes through trenches</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Extra Notes</div>
+            <input type="text" id="pit_extra_notes" name="extra_notes" class="form-input" placeholder="e.g. Shoots all fuel in 5–10 seconds">
+            <span class="field-hint">Only useful observations</span>
+          </div>
+
+          <button type="submit" class="submit-btn">▶ Submit Pit Data</button>
+        </div>
+      </div>
+
+    </form>
   </div>
 
-  <!-- ── QR CODE LIBRARY (inlined) ── -->
+  <!-- ── QR CODE LIBRARY ── -->
   <script>var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';">');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();</script>
 
   <!-- ── APP LOGIC ── -->
   <script>
-    // ── KEY MAPS ──
     const MATCH_SCOUTING_KEYS = {
       scouting_type:"stype", match_type:"mtype", match_number:"mnum",
       replay_match_number:"rmn", team_number:"team", scouter_initials:"scouter",
@@ -666,17 +1162,15 @@
       bump:"bump", trench:"trench", extra_notes:"notes", UID:"UID",
     };
 
-    // ── COUNTER HELPERS ──
     function decrement(id) {
       let el = document.getElementById(id);
-      el.value = Number(el.value) - 1;
+      el.value = Math.max(0, Number(el.value) - 1);
     }
     function increment(id) {
       let el = document.getElementById(id);
       el.value = Number(el.value) + 1;
     }
 
-    // ── NAVIGATION ──
     function showPage(name) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -685,14 +1179,13 @@
       if (name === 'home') renderHomeQR();
     }
 
-    // ── QR RENDER ──
     function renderHomeQR() {
       let scoutingData = localStorage.getItem('qrData');
       let isMatchScouting = scoutingData && scoutingData.includes('match_type');
-      const qrcodeEl  = document.getElementById('qrcode');
+      const qrcodeEl   = document.getElementById('qrcode');
       const caldrukiEl = document.getElementById('caldruki');
-      const noshowEl  = document.getElementById('noshow');
-      const outputEl  = document.getElementById('qrData');
+      const noshowEl   = document.getElementById('noshow');
+      const outputEl   = document.getElementById('qrData');
 
       qrcodeEl.innerHTML = '';
 
@@ -708,11 +1201,10 @@
         const shortcutName = encodeURIComponent('Scouting QR Processor');
         const qrData = 'shortcuts://run-shortcut?name=' + shortcutName + '&input=text&text=' + remappedStr;
 
-        new QRCode(qrcodeEl, qrData);
+        new QRCode(qrcodeEl, { text: qrData, width: 220, height: 220, colorDark: '#000000', colorLight: '#ffffff' });
         caldrukiEl.style.display = 'none';
         qrcodeEl.style.display   = 'block';
 
-        // fallback text
         outputEl.innerHTML = '';
         try {
           const parsed = JSON.parse(remappedStr);
@@ -724,13 +1216,14 @@
         } catch(e) { outputEl.textContent = remappedStr; }
         noshowEl.style.display = 'block';
       } else {
-        caldrukiEl.style.display = 'block';
+        caldrukiEl.style.display = 'flex';
+        caldrukiEl.style.alignItems = 'center';
+        caldrukiEl.style.justifyContent = 'center';
         qrcodeEl.style.display   = 'none';
         noshowEl.style.display   = 'none';
       }
     }
 
-    // ── MATCH FORM SUBMIT ──
     document.getElementById('matchData').addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -739,11 +1232,9 @@
         .map(b => '0123456789'[b % 10]).join('');
       obj.UID = uid;
       localStorage.setItem('qrData', JSON.stringify(obj));
-      console.log('Match data stored', obj);
       showPage('home');
     });
 
-    // ── PIT FORM SUBMIT ──
     document.getElementById('pitData').addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -752,18 +1243,15 @@
         .map(b => '0123456789'[b % 10]).join('');
       obj.UID = uid;
       localStorage.setItem('qrData', JSON.stringify(obj));
-      console.log('Pit data stored', obj);
       showPage('home');
     });
 
-    // ── INIT ──
     renderHomeQR();
 
-    // ── SERVICE WORKER ──
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('service worker registered'))
-        .catch(err => console.error('service worker error:', err));
+        .then(() => console.log('SW registered'))
+        .catch(err => console.error('SW error:', err));
     }
   </script>
 </body>
