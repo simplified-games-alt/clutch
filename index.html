@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1, initial-scale=1, minimal-ui, viewport-fit=cover"
+    />
+    <title>Project C.L.U.T.C.H PWA</title>
+    <!--- You can replace the styles.css file with your own styles --->
+    <!-- THESE COMMENTS ARE TOO CONSTRUCTIVE, LIKE AN AI WANTED YOU TO FINISH THE JOB -->
+    <!-- WAAARRREENNN -->
+    <!--- You may also change aspects of the manifest.json file, but it is needed for the PWA to work --->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles/style.css" />
+
+    <!--- Declare the icons for the webpage --->
+    <link rel="icon" href="icons/Nitro-Icon.png" />
+    <link rel="apple-touch-icon" href="icons/Nitro-Icon.png" />
+    <link rel="mask-icon" href="icons/Nitro-Icon.png" color="#000000" />
+  </head>
+
+  <body>
+    <h1>PROJECT CLUTCH PWA</h1>
+    <h3>Debug V5</h3>
+    <p>
+      Hold your finger on the QRcode <br />
+      tap "Save to Photo Library." 
+    </p>
+    <!--- The body of your html can go here --->
+    <script src="libs/davidshimjs-qrcodejs-04f46c6/qrcode.min.js"></script>
+
+    <script>
+        let scoutingData = localStorage.getItem("qrData"); //qrData is the data used by the qr code
+        let isMatchScouting = scoutingData && scoutingData.includes("match_type");
+
+        const MATCH_SCOUTING_KEYS = {
+          scouting_type: "stype",
+          match_type: "mtype",
+          match_number: "mnum",
+          replay_match_number: "rmn",
+          team_number: "team",
+          scouter_initials: "scouter",
+          fuel_made_auto: "auto_made",
+          fuel_missed_auto: "auto_missed",
+          yesauto_climb: "yauto_climb",
+          noauto_climb: "nauto_climb",
+          no_intake: "nauto_intake",
+          depot: "f_in",
+          neutral_zone: "nz",
+          human_station: "hs",
+          fuel_made: "t_made",
+          fuel_missed: "t_missed",
+          human_player_made: "h_made",
+          human_player_missed: "h_missed",
+          defense_method: "defence",
+          endgame_type: "end",
+          failed_endgame: "end_failed",
+          is_disabled: "disabled",
+          tipped: "tip",
+          penalty_amount: "pen",
+          extra_notes: "notes",
+          UID: "UID",
+        };
+
+        const PIT_SCOUTING_KEYS = {
+          scouting_type: "stype",
+          scouter_initials: "scouter",
+          team_number: "team",
+          drivebase: "drive",
+          fuel_capabilities: "can_score",
+          climb_capabilitiesL1: "t_l1",
+          climb_capabilitiesL2: "t_l2",
+          climb_capabilitiesL3: "t_l3,",
+          defense: "defend",
+          fuel_cap: "storage",
+          auto: "auto",
+          auto_fuel: "auto_fuel",
+          auto_collectfuel: "auto_act",
+          auto_climb: "auto_climb",
+          endgame_aim: "climb?",
+          climb_capabilities: "can_climb",
+          bump: "bump",
+          trench: "trench",
+          extra_notes: "notes",
+          UID: "UID",
+        };
+
+
+
+        if (scoutingData) {
+          console.log("Is this match scouting data?", isMatchScouting);
+          let data = {
+            scouting_type: isMatchScouting ? "match" : "pit",
+            ...JSON.parse(scoutingData),
+          };
+          console.log("[")
+          let i = 0;
+          Object.keys(data).forEach((key) => {
+            let new_key = "not a real key";
+            if (isMatchScouting) {
+              new_key = MATCH_SCOUTING_KEYS[key];
+            } else {
+              new_key = PIT_SCOUTING_KEYS[key];
+            }
+            data[new_key] = data[key];
+
+            //console.log(key, " = ", new_key, " = ", data[new_key]);
+            console.log(key,"=",new_key,"=",data[key]);
+            i = i+1;
+
+            delete data[key];
+          });
+
+          console.log("]");
+
+          console.log(data);
+
+
+
+          scoutingData = JSON.stringify(data);
+          console.log(scoutingData);
+
+          // Apple shortcut is run with shortcuts://run-shortcut?name=[ShortcutName]&input=text&text=[YourText]
+
+          const shortcutName = encodeURIComponent("Scouting QR Processor");
+
+          qrData =
+            "shortcuts://run-shortcut?name=" +
+            shortcutName +
+            "&input=text&text=" +
+            scoutingData;
+        } else {
+          console.error("No data found in localStorage");
+        }
+    </script>
+
+    <!--- Qr Code go here-->
+    <div id="qrcode"></div>
+    <script type="text/javascript">
+      new QRCode(document.getElementById("qrcode"), qrData);
+    </script>
+
+    <div id="caldruki">
+      <!--- Caldruki is the filler image when there is no QR code -->
+      <img src="icons/Nitro-Icon.png" width="200" />
+    </div>
+
+    <label><br /></label>
+
+    <!--- navigation button go here-->
+    <button onclick="window.location.href = 'MatchScouting.html'">
+      MATCH SCOUTING
+    </button>
+    <label><br /></label>
+    <button onclick="window.location.href = 'PitScouting.html'">
+      PIT SCOUTING
+    </button>
+
+    <div class="rapper" id="noshow" style="display: none">
+      <p>
+        <!--- Fallback text -->
+        User data (if QR fails to load): <span id="qrData"></span>
+      </p>
+    </div>
+
+    <!--- I place the script tags here so that they load after the html --->
+
+    <script>
+      adrien = document.getElementById("caldruki"); // adrien references caldruki
+      enrique = document.getElementById("qrcode"); //enrique refenrences the qrcode
+      if (scoutingData) {
+        adrien.style.display = "none";
+        enrique.style.display = "block";
+      } else {
+        adrien.style.display = "block";
+        enrique.style.display = "none";
+      }
+
+      //fallback txt in cace qrcode fails
+      const noshow = document.getElementById("noshow");
+      const output = document.getElementById("qrData");
+      try {
+        const parsed = JSON.parse(scoutingData);
+
+        // Clear existing content
+        output.innerHTML = "";
+
+        if (!parsed || typeof parsed !== "object")
+          throw new Error("parsed is not an object");
+
+        for (const [key, value] of Object.entries(parsed)) {
+          const line = document.createElement("div");
+          line.textContent = `${key}: ${value}`;
+          output.appendChild(line);
+        }
+      } catch (e) {
+        // Fallback if JSON is malformed
+        output.textContent = scoutingData;
+        console.error("Invalid JSON in qrData:", e);
+      }
+      noshow.style.display = "block";
+
+      // Populate summary section
+      const summaryDiv = document.getElementById("summary");
+      if (scoutingData) {
+        try {
+          const parsed = JSON.parse(scoutingData);
+          const obj = Array.isArray(parsed) ? parsed[0] : parsed;
+
+          // Populate summary fields if they exist in the data
+          if (obj.match_type)
+            document.getElementById("matchType").textContent = obj.match_type;
+          if (obj.match_number)
+            document.getElementById("matchNumber").textContent =
+              obj.match_number;
+          if (obj.team_number)
+            document.getElementById("teamNumber").textContent = obj.team_number;
+          if (obj.scouter_initials)
+            document.getElementById("scouterInitials").textContent =
+              obj.scouter_initials;
+
+          if (obj.fuel_made_auto !== undefined)
+            document.getElementById("fuelMadeAuto").textContent =
+              obj.fuel_made_auto;
+          if (obj.fuel_missed_auto !== undefined)
+            document.getElementById("fuelMissedAuto").textContent =
+              obj.fuel_missed_auto;
+          if (obj.fuel_made !== undefined)
+            document.getElementById("fuelMade").textContent = obj.fuel_made;
+          if (obj.fuel_missed !== undefined)
+            document.getElementById("fuelMissed").textContent = obj.fuel_missed;
+
+          if (obj.penalty_amount !== undefined)
+            document.getElementById("penaltyAmount").textContent =
+              obj.penalty_amount;
+
+          // Show the summary section if we have match data
+          if (obj.match_number) {
+            summaryDiv.style.display = "block";
+          }
+        } catch (e) {
+          console.error("Could not populate summary:", e);
+        }
+      }
+
+      //register serviceworker
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js").then(
+          (registration) => {
+            console.log("service worker is registering");
+          },
+          (error) => {
+            console.error("service worker is not working: ${error}");
+          },
+        );
+      } else {
+        console.error("service workers are not supported");
+      }
+    </script>
+  </body>
+</html>
