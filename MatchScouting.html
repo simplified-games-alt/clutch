@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Match Scouting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/match.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+
+    <link rel="icon" href="icons/Nitro-Icon.png" />
+
+  </head>
+  <body>
+    <button onclick="window.location.href='index.html'">Home</button>
+    <label><br></label>
+    <button onclick="window.location.href='PitScouting.html'">Go to Pit Scouting</button>
+    <label><br></label>
+    <div class="container">
+      <h1>Match Scouting Submission</h1>
+      <form action="index.html" method="POST" id="data">
+        <div class="section">
+          <h2>Pregame</h2>
+          <div class="counter">
+            
+          <label for="match_type">Match Type:</label>
+          <div class="radio-options">
+            <label><input type="radio" name="match_type" value="practice" required>Practice</label>
+            <label><input type="radio" name="match_type" value="qual" required>Qualification</label>
+            <label><input type="radio" name="match_type" value="final" required>Final</label>
+          </div>
+            
+            <label for="match_number">Match Number:</label>
+            <div class="counter-controls">
+              <input type="number" id="match_number" name="match_number" value="0" min="0" required>
+            </div>
+          </div>
+          <div class="counter">
+            <label for="team_number">Team Number:</label>
+            <div class="counter-controls">
+              <input type="number" id="team_number" name="team_number" value="0" min="0" required>
+            </div>
+          </div>
+          <div class="name">
+            <label for="scouter_initials">Scouter Initials:<br></label>
+            <label><br></label>
+            <input type="text" id="scouter_initials" name="scouter_initials" required>
+          </div>
+        </div>
+        <div class="section">
+          <h2>Auto</h2>
+            
+          <h3>Auto Scoring</h3>
+          <div class="counter">
+            <label for="fuel_made_auto">Fuel made:</label>
+            <div class="counter-controls">
+              <button type="button" onclick="decrement('fuel_made_auto')">-</button>
+            </div>
+            <input type="number" step="value" id="fuel_made_auto" name="fuel_made_auto" value="0" required>
+            <div class="counter-controls">
+              <button type="button" onclick="increment('fuel_made_auto')">+</button>
+            </div>
+          </div>
+          <div class="counter">
+            <label for="fuel_missed_auto">Fuel missed:</label>
+            <button type="button" onclick="decrement('fuel_missed_auto')">-</button>
+            <input type="number" id="fuel_missed_auto" name="fuel_missed_auto" value="0" required>
+            <button type="button" onclick="increment('fuel_missed_auto')">+</button>
+            </div>
+
+          <h3>Auto Climbing</h3>
+
+          <div class="option-group">
+
+            <div class="radio-options" \>
+            <label for="auto_climb">Does the robot climb?</label>
+              <label><input type="radio" id="noauto_climb" name="auto_climb" value="noauto_climb">Yes (L1)</label>
+              <label><input type="radio" id="yesauto_climb" name="auto_climb" value="yesauto_climb">No</label>
+            </div>
+
+          </div>
+          
+          <h3>Auto Intake</h3>
+
+          <div class="option-group">
+
+            <div class="radio-options checkbox-row" \">
+            <label for="auto_intake">Where does the robot intake fuel?<br></label>
+            <div>
+              <label><input type="checkbox" id="no_intake" name="no_intake" value="no_intake">Did not intake</label>
+              <label><input type="checkbox" id="depot" name="depot" value="fuel">Depot</label>
+              <label><input type="checkbox" id="neutral_zone" name="neutral_zone" value="neutral_zone">Neutral zone</label>
+              <label><input type="checkbox" id="human_station" name="human_station" value="human_station">Human station</label>
+            </div>
+          </div>
+
+          </div>
+
+          
+        
+        </div>
+
+          <div class="section">
+          <h2>Teleop</h2>
+          <h3>Teleop Scoring</h3>
+          <div class="counter">
+            <label for="fuel_made">Fuel made:</label>
+              <button type="button" onclick="decrement('fuel_made')">-</button>
+              <input type="number" id="fuel_made" name="fuel_made" value="0" min="0" required>
+              <button type="button" onclick="increment('fuel_made')">+</button>
+            </div>
+          <div class="counter">
+            <label for="fuel_missed">Fuel missed:</label>
+              <button type="button" onclick="decrement('fuel_missed')">-</button>
+              <input type="number" id="fuel_missed" name="fuel_missed" value="0" min="0" required>
+              <button type="button" onclick="increment('fuel_missed')">+</button>
+            </div>
+
+          <!-- <div class="counter">
+            <label for="human_player_made">Human player made:</label>
+              <button type="button" onclick="decrement('human_player_made')">-</button>
+              <input type="number" id="human_player_made" name="human_player_made" value="0" min="0" required>
+              <button type="button" onclick="increment('human_player_made')">+</button>
+          </div>
+          <div class="counter">
+            <label for="human_player_missed">Human player missed:</label>
+            <button type="button" onclick="decrement('human_player_missed')">-</button>
+              <input type="number" id="human_player_missed" name="human_player_missed" value="0" min="0" required>
+              <button type="button" onclick="increment('human_player_missed')">+</button>
+          </div> -->
+
+          <h3>Active Strategy</h3>
+          <div class="option-group">
+            <label>Active Strategy:</label>
+            <div class="radio-options">
+              <label><input type="radio" name="active_strat" value="none" required> No Strategy</label>
+              <label><input type="radio" name="active_strat" value="shoot" required> Shoots</label>
+              <label><input type="radio" name="active_strat" value="inbound" required> Inbounds</label>
+              <label><input type="radio" name="active_strat" value="defend" required> Defends</label>
+            </div>
+          </div>
+
+          <h3>Inactive Strategy</h3>
+          <div class="option-group">
+            <label>Inactive Strategy:</label>
+            <div class="radio-options">
+              <label><input type="radio" name="inactive_strat" value="none" required> No Strategy</label>
+              <label><input type="radio" name="inactive_strat" value="shoot" required> Shoots</label>
+              <label><input type="radio" name="inactive_strat" value="inbound" required> Inbounds</label>
+              <label><input type="radio" name="inactive_strat" value="defend" required> Defends</label>
+            </div>
+          </div>
+
+
+
+
+          </div>
+          
+        <div class="section">
+
+          <h2>Defence</h2>
+          <div class="option-group">
+            <label>Method of Defending:</label>
+            <div class="radio-options">
+              <label><input type="radio" name="defense_method" value="none" required> None </label>
+              <label><input type="radio" name="defense_method" value="blocking" required> Blocking trench/bump </label>
+              <label><input type="radio" name="defense_method" value="disrupting" required> Disrupting source </label>
+              <label><input type="radio" name="defense_method" value="dealigns" required> Dealigns Shooters</label>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+        <div class="section">
+          <h2>Endgame</h2>
+          <div class="option-group">
+            <label>Endgame Type:</label>
+            <div class="radio-options">
+              <label>
+                <input type="radio" name="endgame_type" value="none" required>
+                No Endgame
+              </label>
+              <label>
+                <input type="radio" name="endgame_type" value="l1_climb" required>
+                L1 Climb
+              </label>
+              <label>
+                <input type="radio" name="endgame_type" value="l2_climb" required>
+                L2 Climb
+              </label>
+              <label>
+                <input type="radio" name="endgame_type" value="l3_climb" required>
+                L3 Climb
+              </label>
+              <label><input type="radio" name="endgame_type" value="failed_climb" required> Failed Climb</label>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <h2>Misc</h2>
+          <div class="option-group">
+            <label>Is the robot disabled?</label>
+            <label class="radio-options">
+              <label>
+                <input type="radio" id="disabled" name="is_disabled" value="no" required> No </label>
+              <label>
+                <input type="radio" id="disabled" name="is_disabled" value="yes" required> Yes  </label>
+          </div>
+          <div class="option-group">
+            <label>Is the robot tipped?</label>
+            <label class="radio-options">
+              <label>
+              <input type="radio" id="tipped" name="tipped" value="no" required> No </label>
+              <label>
+                <input type="radio" id="tipped" name="tipped" value="yes" required> Yes </label>
+          </div> 
+          <div class="counter">
+            <label for="penalty_amount">Penalty Amount:</label>
+              <button type="button" onclick="decrement('penalty_amount')">-</button>
+              <input type="number" id="penalty_amount" name="penalty_amount" value="0" min="0" required>
+              <button type="button" onclick="increment('penalty_amount')">+</button>
+          </div>
+          <div class="extra-notes">
+            <label>Any USEFUL extra notes?<br></label>
+            <label><br></label>
+            <input type="text" id="extra_notes" name="extra_notes" placeholder="eg. They have fast cycles times but frequently get stuck on fuel.">
+          </div>
+
+          <button type="submit">Submit Data</button>
+        </div>
+        </div>
+      </form>
+
+      <script>
+        function decrement(id) {
+          let el = document.getElementById(id);
+          el.value = Number(el.value) - 1;
+        }
+
+        function increment(id) {
+          let el = document.getElementById(id);
+          el.value = Number(el.value) + 1;
+        }
+  
+        document.getElementById("data").addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const obj = Object.fromEntries(formData.entries());
+
+            const emojis = ['1', '2', '3', '4', '5', '6', '7', '8','9', '0']; // keep it simple
+            const uid = Array.from(crypto.getRandomValues(new Uint8Array(5)))
+                .map(b => emojis[b % emojis.length])
+                .join('');
+            obj.UID = uid;
+
+            localStorage.setItem('qrData', JSON.stringify(obj));
+            console.log("Storing data", obj);
+            window.location.href = 'index.html';
+        });
+
+    </script>
+
+    </div>
+  </body>
+</html>
